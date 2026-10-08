@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { RefreshCw, ServerCrash } from 'lucide-react'
-import { motion } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 
 import { AppHeader } from '@/components/app-header'
 import { ContributionChart } from '@/components/contribution-chart'
+import { LandingPage } from '@/components/landing-page'
 import { ModelPanel } from '@/components/model-panel'
 import { AnimatedNumber, ScoreCard } from '@/components/score-card'
 import { StudentForm } from '@/components/student-form'
@@ -29,6 +30,7 @@ export default function App() {
   const [prediction, setPrediction] = useState<Prediction | null>(null)
   const [loadError, setLoadError] = useState(false)
   const [predictError, setPredictError] = useState(false)
+  const [showApp, setShowApp] = useState(false)
 
   const load = useCallback(() => {
     setLoadError(false)
@@ -69,10 +71,26 @@ export default function App() {
 
   return (
     <TooltipProvider>
-      <div className="min-h-svh pb-24 lg:pb-0">
-        <AppHeader online={!!schema && !predictError} theme={theme} onToggleTheme={toggle} />
+      <AnimatePresence mode="wait" initial>
+        {!showApp ? (
+          <LandingPage
+            key="landing"
+            onEnter={() => {
+              setShowApp(true)
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            }}
+          />
+        ) : (
+          <motion.div
+            key="application"
+            className="min-h-svh pb-24 lg:pb-0"
+            initial={{ opacity: 0, y: 90, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <AppHeader online={!!schema && !predictError} theme={theme} onToggleTheme={toggle} />
 
-        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
+            <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:py-10">
           <motion.div {...fadeUp} className="mb-8 max-w-2xl">
             <h1 className="text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
               What will this student score in the final exam?
@@ -136,21 +154,23 @@ export default function App() {
               </p>
             </>
           )}
-        </main>
+            </main>
 
-        {/* On small screens the score stays visible while the form is scrolled. */}
-        {prediction && ready && (
-          <div className="fixed inset-x-0 bottom-0 z-30 border-t bg-background/90 px-4 py-3 backdrop-blur-md lg:hidden">
-            <div className="mx-auto flex max-w-7xl items-center justify-between">
-              <span className="text-sm text-muted-foreground">Predicted exam score</span>
-              <span className="text-2xl font-semibold tabular-nums">
-                <AnimatedNumber value={prediction.score} />
-                <span className="ml-1 text-sm font-medium text-muted-foreground">/ 100</span>
-              </span>
-            </div>
-          </div>
+            {/* On small screens the score stays visible while the form is scrolled. */}
+            {prediction && ready && (
+              <div className="fixed inset-x-0 bottom-0 z-30 border-t bg-background/90 px-4 py-3 backdrop-blur-md lg:hidden">
+                <div className="mx-auto flex max-w-7xl items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Predicted exam score</span>
+                  <span className="text-2xl font-semibold tabular-nums">
+                    <AnimatedNumber value={prediction.score} />
+                    <span className="ml-1 text-sm font-medium text-muted-foreground">/ 100</span>
+                  </span>
+                </div>
+              </div>
+            )}
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
     </TooltipProvider>
   )
 }

@@ -1,4 +1,4 @@
-import { GraduationCap, Moon, Sun } from 'lucide-react'
+import { Moon, Sun } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -14,8 +14,8 @@ export function AppHeader({ online, theme, onToggleTheme }: Props) {
     <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <GraduationCap className="size-5" aria-hidden />
+          <div className="app-esp-mark" aria-hidden>
+            ESP
           </div>
           <div className="leading-tight">
             <p className="font-semibold tracking-tight whitespace-nowrap">Exam Score Predictor</p>
